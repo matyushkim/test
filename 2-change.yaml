@@ -1,8 +1,6 @@
 inventory
-
 [my_serv]
 192.168.2.2 ansible_user=user ansible_ssh_pass=123456789
-
 
 
 ---
