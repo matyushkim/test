@@ -14,8 +14,7 @@ valid_lft forever preferred_lft forever
 3: ens19: &lt;BROADCAST,MULTICAST&gt; mtu 1500 qdisc noqueue state DOWN group
 default qlen 1000
 
-#### 1. Собрать бондинг LACP из вышеуказанных интерфейсов и переместить ip на
-него.
+#### 1. Собрать бондинг LACP из вышеуказанных интерфейсов и переместить ip на него.
 #### 2. Необходимо скриптом или несколькими скриптами Ansible
 a. Удаленно зайти на сервер
 b. Сменить стандартный пароль на любой

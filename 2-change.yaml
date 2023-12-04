@@ -1,0 +1,29 @@
+inventory
+
+[my_serv]
+192.168.2.2 ansible_user=user ansible_ssh_pass=123456789
+
+
+
+---
+- hosts:  my_serv
+  become: yes
+  vars:
+    user_name:    user
+    new_password: new_password
+  tasks:
+    - name: Change password for user
+      ansible.builtin.user:
+        name: "{{ user_name }}"
+        password: "{{ new_password | password_hash('sha512') }}"
+
+    - name: Create a new user
+      user:
+        name: new_user
+        password: "{{ 'new_user_password' | password_hash('sha512') }}"
+        shell: /bin/bash
+
+
+```bash
+ansible-playbook -i inventory change_password.yml
+```

@@ -1,0 +1,55 @@
+a.  отредактировать файл `/etc/ssh/sshd_config` и измените строку `Port 22` на `Port новый_порт`, 
+    затем перезапустить SSH сервис:
+
+```bash
+sudo systemctl restart sshd
+```
+
+b.  запустить второй демон sshd
+
+скопировать текущий конфиг:
+    ```bash
+    sudo cp /etc/ssh/sshd_config /etc/ssh/sshd_config_custom
+    ```
+отредактировать `/etc/ssh/sshd_config_custom`
+    ```
+    Port новый_порт
+    ListenAddress 192.168.2.2
+    ```
+запустить 
+    ```bash
+    sudo /usr/sbin/sshd -f /etc/ssh/sshd_config_custom
+    ```
+при перезагрузке настройки слетят для этого создаем сервис
+`/etc/systemd/system/sshd_custom.service`:
+    ```ini
+    [Unit]
+    Description=OpenSSH server daemon
+    After=network.target auditd.service
+    ConditionPathExists=!/etc/ssh/sshd_not_to_be_run
+
+    [Service]
+    EnvironmentFile=-/etc/default/ssh
+    ExecStart=/usr/sbin/sshd -f /etc/ssh/sshd_config_custom
+    ExecReload=/bin/kill -HUP $MAINPID
+    KillMode=process
+    Restart=on-failure
+
+    [Install]
+    WantedBy=multi-user.target
+    Alias=sshd_custom.service
+    ```
+и запускаем 
+    ```bash
+    sudo systemctl enable sshd_custom.service
+    sudo systemctl start sshd_custom.service
+    ```
+
+b. или тоже самое с помощью iptables
+
+    ```bash
+    sudo iptables -t nat -A PREROUTING -p tcp -i ens18 --dport 2222 -j REDIRECT --to-port 22
+    sudo apt-get install iptables-persistent
+    sudo netfilter-persistent save
+    sudo systemctl restart sshd
+    ```
